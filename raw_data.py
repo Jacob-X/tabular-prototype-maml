@@ -10,42 +10,12 @@ from dataset import comorbidityDataset
 import torch
 
 def protonet_raw_data():
-    # 创建数据集
-    # train_dataset = goutDataset(
-    #     "/home/xutianxin/Pycharm_code/data_process_pipline/balanced_data_select/gout_self_supervised_data_median_fillup.csv")
-
-    # 原始的41维数据
-    # train_dataset = goutDataset("/home/xutianxin/Pycharm_code/data_process_pipline/balanced_data_select/blood_chem_balanced_data/self_supervised_data.csv")
-
-    # 更新后的数据路径： /home/xutianxin/Pycharm_code/data_process_pipline/combine_additional_data/balanced_data_spilt/
-
-    # label 有问题的数据
-    # train_dataset = goutDataset("/home/xutianxin/Pycharm_code/data_process_pipline/combine_additional_data/balanced_data_spilt/self_supervised_data.csv")
-
     # 新的数据集
     train_dataset = goutDataset("/home/xutianxin/Pycharm_code/self_supervised_protonet/comorbidity_data/self_supervised_data.csv")
-
-    # "/home/xutianxin/Pycharm_code/self_supervised_protonet/data/datafiles/
-    # comorbidities_path = "/home/xutianxin/Pycharm_code/data_process_pipline/combine_additional_data/balanced_data_spilt/"
-    #
-    # single_disease_path = "/home/xutianxin/Pycharm_code/data_process_pipline/combine_additional_data/balanced_data_spilt/"
-
-    # 新的数据集
-    # /home/xutianxin/Pycharm_code/data_process_pipline/gout_comorbidities_data/train_data_combine/british_white_data_split/data_split/
 
     comorbidities_path = "/home/xutianxin/Pycharm_code/self_supervised_protonet/comorbidity_data/"
 
     single_disease_path = "/home/xutianxin/Pycharm_code/self_supervised_protonet/comorbidity_data/"
-
-    # gout_heart_failure_dataset = comorbidityDataset(comorbidities_path + "gout_heart_failure.csv")
-    # gout_myocardial_infaraction_dataset = comorbidityDataset(comorbidities_path + "gout_myocardial_infaraction.csv")
-    # gout_hypertension_dataset = comorbidityDataset(comorbidities_path + "gout_hypertension.csv")
-    # gout_t2DM_dataset = comorbidityDataset(comorbidities_path + "gout_t2DM.csv")
-    # gout_stroke_dataset = comorbidityDataset(comorbidities_path + "gout_stroke.csv")
-    # gout_nephrolithiasis_dataset = comorbidityDataset(comorbidities_path+"gout_nephrolithiasis.csv")
-    # gout_obesity_dataset = comorbidityDataset(comorbidities_path+"gout_obesity.csv")
-    # gout_ckd_dataset = comorbidityDataset(comorbidities_path+"gout_ckd.csv")
-
 
     gout_heart_failure_dataset = comorbidityDataset(comorbidities_path + "gout_heart_failure.csv")
     gout_myocardial_infaraction_dataset = comorbidityDataset(comorbidities_path + "gout_myocardial_infarction.csv")
@@ -77,18 +47,6 @@ def protonet_raw_data():
     test_dataloader.append(gout_ckd)
 
     # 创建单病种测试集
-
-    # heart_failure_dataset = comorbidityDataset(comorbidities_path + "heart_failure.csv")
-    # myocardial_infaraction_dataset = comorbidityDataset(comorbidities_path + "myocardial_infaraction.csv")
-    # hypertension_dataset = comorbidityDataset(comorbidities_path + "hypertension.csv")
-    # t2DM_dataset = comorbidityDataset(comorbidities_path + "t2DM.csv")
-    # stroke_dataset = comorbidityDataset(comorbidities_path + "stroke.csv")
-    # nephrolithiasis_dataset = comorbidityDataset(comorbidities_path+"nephrolithiasis.csv")
-    # obesity_dataset = comorbidityDataset(comorbidities_path+"obesity.csv")
-    # ckd_dataset = comorbidityDataset(comorbidities_path+"ckd.csv")
-    # gout_dataset = comorbidityDataset(comorbidities_path+"gout.csv")
-
-
     heart_failure_dataset = comorbidityDataset(comorbidities_path + "heart_failure.csv")
     myocardial_infaraction_dataset = comorbidityDataset(comorbidities_path + "myocardial_infarction.csv")
     hypertension_dataset = comorbidityDataset(comorbidities_path + "hypertension.csv")
@@ -99,8 +57,6 @@ def protonet_raw_data():
     ckd_dataset = comorbidityDataset(comorbidities_path+"ckd.csv")
     gout_dataset = comorbidityDataset(comorbidities_path+"gout.csv")
 
-
-
     heart_failure = DataLoader(heart_failure_dataset, batch_size=len(heart_failure_dataset),shuffle=False)
     myocardial_infaraction = DataLoader(myocardial_infaraction_dataset, batch_size=len(myocardial_infaraction_dataset), shuffle=False)
     hypertension = DataLoader(hypertension_dataset, batch_size=len(hypertension_dataset), shuffle=False)
@@ -110,7 +66,6 @@ def protonet_raw_data():
     obesity = DataLoader(obesity_dataset, batch_size=len(obesity_dataset), shuffle=False)
     ckd = DataLoader(ckd_dataset, batch_size=len(ckd_dataset), shuffle=False)
     gout = DataLoader(gout_dataset, batch_size=len(gout_dataset), shuffle=False)
-
 
     # 要和训练集保持一样的顺序
     query_dataloader = []
@@ -125,7 +80,6 @@ def protonet_raw_data():
     query_dataloader.append(t2DM)
 
     return train_dataset,test_dataloader,query_dataloader
-
 
 if __name__ == '__main__':
 

@@ -155,7 +155,7 @@ def train_balance(model, train_dataloader, val_dataloader, optimizer, criterion,
 
                 predicted_logits_tensor = torch.stack(predicted_logits_result, dim=0)
 
-                positive_col = ["gout","ckd", "heart_failure", "hypertension", "myocardial_infaraction", "nephrolithiasis",
+                positive_col = ["gout","ckd", "heart_failure", "hypertension", "myocardial_infarction", "Nephrolithiasis",
                                 "obesity", "stroke", "t2DM"]
 
                 print("dataloader num: ", i, "disease name:", positive_col[column])
@@ -167,7 +167,7 @@ def train_balance(model, train_dataloader, val_dataloader, optimizer, criterion,
 
                 ce_loss_value_3 = criterion(predicted_logits_values_2, val_values.long())
                 # fast_weights = list(map(lambda p: p[1] - args.update_lr * p[0], zip(grad, task_model.parameters())))
-                print("disease name:", positive_col[column], 'CrossEntropyLoss:', ce_loss_value_3)
+                print("disease name:", positive_col[column], 'CrossEntropyLoss:', ce_loss_value_3.item())
                 # 把当前任务的最后一步的损失加入到列表中
                 if k == args.update_step - 1:
                     all_ce_loss_list.append(ce_loss_value_3)
