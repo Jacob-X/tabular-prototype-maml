@@ -13,7 +13,7 @@ import pandas as pd
 class goutDataset(Dataset):
     def __init__(self, csv_file):
         self.data = pd.read_csv(csv_file)
-        self.data = self.data.drop(["Unnamed: 0"], axis=1)  # 删除Unnamed列
+        # self.data = self.data.drop(["Unnamed: 0"], axis=1)  # 删除Unnamed列
         self.data = self.data.drop(["eid"], axis=1)  # 删除eid列
         self.data = self.data.fillna(self.data.median())  # 用中位数填充缺失值
         self.labels = self.data.iloc[:, -9:].values  # 获取最后9列作为标签

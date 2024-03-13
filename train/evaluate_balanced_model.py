@@ -13,24 +13,25 @@ import csv
 import torch.nn as nn
 
 # test_dataloader是一个list,里面包含了8种共病的dataloader
-def evaluate_balance(model, test_dataloader, criterion, epoch, args,device,filename):
+def evaluate_balance(model, test_dataloader, criterion, args,device,filename):
     # test_dataloader是把所有数据放在一个batch里面的
 
     eval_metrics_list = []
     acc_list = []
     for loaderindex in range(len(test_dataloader)):
         testloader = test_dataloader[loaderindex]
-        positive_col = ['gout_stroke', 'gout_nephrolithiasis', 'gout_myocardial_infaraction',
-                        'gout_heart_failure', 'gout_obesity', 'gout_ckd', 'gout_t2DM', 'gout_hypertension']
-
+        positive_col = ['Gout Heart Failure', 'Gout Myocardial Infarction', 'Gout Hypertension', 'Gout T2DM',
+                        'Gout Stroke', 'Gout Nephrolithiasis', 'Gout Obesity', 'Gout Ckd']
 
         for batch in testloader:
             batch_features,batch_labels = batch
             batch_features = batch_features.to(device)
             batch_labels = batch_labels.to(device)
 
-            split_ratio = [2 / 5, 3 / 5]
-            split_sizes = [int(len(batch_features) * ratio) for ratio in split_ratio]
+            split_ratio = 2 / 5
+            first_split = int(len(batch_features) * split_ratio)
+            second_split = len(batch_features) - first_split
+            split_sizes = [first_split, second_split]
             split_dataset = data.random_split(list(zip(batch_features, batch_labels)), split_sizes)
 
             # 获取划分后的数据集
@@ -47,8 +48,6 @@ def evaluate_balance(model, test_dataloader, criterion, epoch, args,device,filen
             query_features = torch.stack(query_features, dim=0)
             query_labels = torch.stack(query_labels, dim=0)
 
-
-
             task_model = copy.deepcopy(model).to(device)
             column_values = support_labels[:, 0]
 
@@ -58,8 +57,8 @@ def evaluate_balance(model, test_dataloader, criterion, epoch, args,device,filen
             train_negative = feature_embedding[column_values == 0]
 
             # 从 train_positive 中随机采样 5 个数据
-            pos_sampler = data.RandomSampler(train_positive, replacement=True, num_samples=5)
-            neg_sampler = data.RandomSampler(train_negative, replacement=True, num_samples=5)
+            pos_sampler = data.RandomSampler(train_positive, replacement=True, num_samples=1)
+            neg_sampler = data.RandomSampler(train_negative, replacement=True, num_samples=1)
 
             # 创建一个数据加载器，用于加载采样后的数据
             pos_dataloader = data.DataLoader(train_positive, batch_size=5, sampler=pos_sampler)
@@ -174,7 +173,7 @@ def evaluate_balance(model, test_dataloader, criterion, epoch, args,device,filen
                 eval_metrics_list.append([positive_col[loaderindex], mse_value.item(), f1, auc, accuracy, precision])
 
 
-    column_names = ["disease","MSE","f1_score", "auc", "accuracy", "precision"]
+    column_names = ["disease","loss","MSE","f1_score", "auc", "accuracy", "precision"]
 
     with open(filename, mode='a', newline='') as file:
         writer = csv.writer(file)

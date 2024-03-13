@@ -150,11 +150,11 @@ def evaluate(model, test_dataloader, criterion, epoch, args,device,filename):
                 query_values_last = query_labels[:, column]
                 predicted_result = torch.stack(predicted_class_list, dim=0)
 
-
+                cross_entropy_loss = criterion(ce_loss_list_last, query_values_last.long())
 
                 # mse
-                mse_loss = nn.MSELoss()
-                mse_value = mse_loss(predicted_result, query_values_last)
+                # mse_loss = nn.MSELoss()
+                # mse_value = mse_loss(predicted_result, query_values_last)
 
                 # 计算准确率
                 true_labels = query_values_last.cpu().numpy()  # 真实标签
@@ -171,10 +171,10 @@ def evaluate(model, test_dataloader, criterion, epoch, args,device,filename):
 
                 acc_list.append(accuracy)
 
-                eval_metrics_list.append([positive_col[column], mse_value.item(),f1, auc, accuracy, precision])
+                eval_metrics_list.append([positive_col[column], cross_entropy_loss.item(),f1, auc, accuracy, precision])
 
 
-        column_names = ["disease","MSE","f1_score", "auc", "accuracy", "precision"]
+        column_names = ["disease","loss","f1_score", "auc", "accuracy", "precision"]
 
         with open(filename, mode='a', newline='') as file:
             writer = csv.writer(file)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author  : jacob xu
-# @Time    : 2023/8/1 16:27
-# @File    : run_model.py
+# @Time    : 2024/1/31 21:20
+# @File    : test_maml.py
 # @Software: PyCharm
 import os
 
@@ -65,12 +65,12 @@ def run_model(args,train_filename,eval_filename,file_path):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # 定义k-fold参数和epoch参数
-    num_epochs = 200  # 训练的轮数
+    num_epochs = 500  # 训练的轮数
     best_acc1 = 0
 
     train_dataset, test_dataloader, query_dataloader = protonet_raw_data()
 
-    model = mlp(in_features=len(train_dataset.features[0]), out_features=128, hidden_sizes=1024, drop_p=0.5).to(device)
+    model = mlp(in_features=len(train_dataset.features[0]), out_features=train_dataset.features.shape[1], hidden_sizes=train_dataset.features.shape[1]*2, drop_p=0.5).to(device)
 
     criterion = nn.CrossEntropyLoss()
     # 定义优化器
@@ -90,7 +90,7 @@ def run_model(args,train_filename,eval_filename,file_path):
     # positive_col = ["ckd", "heart_failure", "hypertension", "myocardial_infaraction", "nephrolithiasis",
     #                 "obesity", "stroke", "t2DM", "gout"]
 
-    positive_col = ["gout", "ckd", "heart_failure", "hypertension", "myocardial_infaraction",
+    positive_col = ["gout", "ckd", "heart_failure", "hypertension", "myocardial_infarction",
                     "nephrolithiasis", "obesity", "stroke", "t2DM"]
 
     with open(file_path+train_filename, 'a', newline='') as file:
@@ -98,32 +98,21 @@ def run_model(args,train_filename,eval_filename,file_path):
         writer.writerow(positive_col + ["avg_loss"])  # Header row
         file.close()
 
+    model.load_state_dict(torch.load("/home/xutianxin/Pycharm_code/multi-labels-prototypical-networks/result/protoMaml/15:20:21checkpoint.pth.tar")["state_dict"])
+
     # 数据集是train_dataset, test_dataloader, query_dataloader，不需要进行k_fold交叉验证
-    for epoch in tqdm(range(num_epochs)):
+    # for epoch in tqdm(range(num_epochs)):
+    #
+    #     adjust_learning_rate(optimizer, epoch, args)
+    #     train_dataloader = DataLoader(train_dataset, batch_size=len(train_dataset), shuffle=True)
+    #     train_balance(model, train_dataloader, query_dataloader, optimizer, criterion, epoch, args, device,
+    #           filename=file_path + train_filename)
+    #
+    #     print("Epoch:", epoch + 1)
 
-        # adjust_learning_rate(optimizer, epoch, args)
-        # train_dataloader = DataLoader(train_dataset, batch_size=len(train_dataset), shuffle=True)
-        # train_balance(model, train_dataloader, query_dataloader, optimizer, criterion, epoch, args, device,
-        #       filename=file_path + train_filename)
-        #
-        # print("Epoch:", epoch + 1)
+    average_acc, acc_list = evaluate_balance(model, test_dataloader, criterion, args,device,filename=file_path+eval_filename)
 
-        average_acc, acc_list = evaluate_balance(model, test_dataloader, criterion, args,device,filename=file_path+eval_filename)
 
-        print("average_acc: ", average_acc, "best_acc1: ", best_acc1)
-
-        is_best = average_acc > best_acc1
-        best_acc1 = max(average_acc, best_acc1)
-
-        save_checkpoint(
-            {
-                "epoch": epoch + 10,
-                "state_dict": model.state_dict(),
-                "optimizer": optimizer.state_dict(),
-            },
-            is_best=False,
-            filename=file_path + "/checkpoint_{:04d}.pth.tar".format(epoch),
-        )
 
 if __name__ == '__main__':
 
@@ -148,5 +137,3 @@ if __name__ == '__main__':
                         level=logging.INFO)
 
     run_model(args,train_fname,eval_fname,file_path)
-
-
